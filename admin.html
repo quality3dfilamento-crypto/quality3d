@@ -322,6 +322,7 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
           <button class="btn pri needs-write" type="button" data-new-sale><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>Registrar venda</button>
         </div>
       </div>
+      <div id="sitePend"></div>
       <div class="catalog">
         <span class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"></path><path d="M4 9h16M9 9v10"></path></svg></span>
         <div class="tx"><b>Catálogo digital da loja</b><code id="catUrl">https://claude.ai/artifact/6KDNTrryZEdACp8vgioJ8t</code></div>
@@ -491,6 +492,9 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
   }
   function delta(cur,prev){if(prev==null)return '';if(!prev)return cur?'sem vendas no período anterior':'';var p=(cur-prev)/prev*100;return (p>=0?'▲ ':'▼ ')+Math.abs(p).toFixed(0)+'% vs. período anterior'}
   function renderDash(){
+    var pend=sales.filter(function(s){return s.status==='Pendente'&&s.origem==='site'});
+    $('sitePend').innerHTML=pend.length?'<div class="notice" style="background:#fff3ea;color:var(--ink);border:1px solid #ffd2b0;justify-content:space-between;flex-wrap:wrap"><span><b>'+pend.length+' pedido'+(pend.length>1?'s':'')+' do site aguardando confirmação.</b> Confira no WhatsApp, confirme o pagamento e mude o status para Pago.</span><button class="btn sm pri" type="button" id="seePend">Ver pedidos</button></div>':'';
+    if(pend.length)$('seePend').onclick=function(){$('sStatus').value='Pendente';location.hash='vendas';renderSales()};
     var r=rangeFor(period), pr=prevRange(period);
     var cur=sales.filter(function(s){return valid(s)&&inRange(s,r)}), prev=pr?sales.filter(function(s){return valid(s)&&inRange(s,pr)}):null;
     var sum=function(a,f){return a.reduce(function(t,s){return t+n(s[f])},0)};
@@ -661,8 +665,8 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
       if(!items.length)return showErr('sErr','Adicione pelo menos um produto com quantidade.');
       if(!$('vData').value)return showErr('sErr','Informe a data da venda.');
       var t=saleTotals(items,$('vDesc').value,$('vFrete').value);
-      var body={data:$('vData').value,cliente:$('vCli').value.trim(),contato:$('vTel').value.trim(),canal:$('vCanal').value,pagamento:$('vPag').value,status:$('vSt').value,itens:items,
-        desconto:n($('vDesc').value),frete:n($('vFrete').value),subtotal:t.sub,total:t.total,custoTotal:t.custo,lucro:t.lucro,obs:$('vObs').value.trim(),criadoEm:(orig&&orig.criadoEm)||Date.now(),atualizadoEm:Date.now()};
+      var body=Object.assign({},orig||{},{data:$('vData').value,cliente:$('vCli').value.trim(),contato:$('vTel').value.trim(),canal:$('vCanal').value,pagamento:$('vPag').value,status:$('vSt').value,itens:items,
+        desconto:n($('vDesc').value),frete:n($('vFrete').value),subtotal:t.sub,total:t.total,custoTotal:t.custo,lucro:t.lucro,obs:$('vObs').value.trim(),criadoEm:(orig&&orig.criadoEm)||Date.now(),atualizadoEm:Date.now()});delete body.id;
       var ref=orig?db.collection('vendas').doc(orig.id):db.collection('vendas').doc();
       busy(e.submitter,true);
       ref.set(body).then(function(){return applyStock(orig,body,{id:ref.id,cliente:body.cliente})}).then(function(){closeModal();toast(orig?'Venda atualizada':'Venda registrada')},function(err){busy(e.submitter,false);showErr('sErr',errText(err))})});
