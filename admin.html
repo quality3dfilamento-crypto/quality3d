@@ -2,6 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://xolkrxcdtmebtrphorvh.supabase.co wss://xolkrxcdtmebtrphorvh.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<style id="afc">html{display:none!important}</style><script>if(self===top){var afc=document.getElementById("afc");afc.parentNode.removeChild(afc)}else{top.location=self.location}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Painel Quality 3D</title>
@@ -347,7 +350,7 @@ td .sub{display:block;color:var(--mute);font-size:12.5px}
 @media (max-width:1000px){.hs-grid{grid-template-columns:1fr}.hs-sum{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
 <script>
 // Conexão com o Supabase (chave pública "anon": pode ficar no site, o acesso é protegido pelas regras do banco)
 window.SUPABASE_URL = "https://xolkrxcdtmebtrphorvh.supabase.co";
@@ -369,7 +372,7 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
       <a class="tab" href="#produtos" data-view="produtos"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 3v6M4.2 16.5l5.2-3M19.8 16.5l-5.2-3"></path></svg>Produtos</a>
     </nav>
     <a class="cat-link" href="https://claude.ai/artifact/6KDNTrryZEdACp8vgioJ8t" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>Ver catálogo digital</a>
-    <div class="foot" style="margin-top:0"><b>Conectado como</b><span id="who" style="word-break:break-all"></span><button type="button" id="logout" style="display:block;margin-top:8px;background:rgba(42,18,6,.22);border:0;color:#fff;padding:8px 12px;border-radius:9px;font-weight:700;cursor:pointer">Sair</button></div>
+    <div class="foot" style="margin-top:0"><b>Conectado como</b><span id="who" style="word-break:break-all"></span><button type="button" id="logout" style="display:block;margin-top:8px;background:rgba(42,18,6,.22);border:0;color:#fff;padding:8px 12px;border-radius:9px;font-weight:700;cursor:pointer">Sair</button><button type="button" id="chpwd" style="display:block;margin-top:6px;background:none;border:0;color:#fff;opacity:.85;padding:4px 0;font-weight:600;font-size:13px;text-decoration:underline;cursor:pointer">Trocar senha</button></div>
   </aside>
 
   <main class="main">
@@ -803,7 +806,7 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
 
   /* CSV */
   $('exportCsv').addEventListener('click',function(){var list=filteredSales();if(!list.length){toast('Nenhuma venda para exportar');return}
-    var q=function(v){v=String(v==null?'':v);return '"'+v.replace(/"/g,'""')+'"'};
+    var q=function(v){v=String(v==null?'':v);if(/^([=+@\t\r]|-(?![\d,.]))/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'};
     var rows=[['Data','Cliente','Contato','Canal','Pagamento','Status','Itens','Subtotal','Desconto','Frete','Total','Custo','Lucro','Observações']].concat(list.map(function(s){
       return [fmtDate(s.data),s.cliente,s.contato,s.canal,s.pagamento,s.status,(s.itens||[]).map(function(i){return i.qtd+'x '+i.nome}).join('; '),n(s.subtotal).toFixed(2).replace('.',','),n(s.desconto).toFixed(2).replace('.',','),n(s.frete).toFixed(2).replace('.',','),n(s.total).toFixed(2).replace('.',','),n(s.custoTotal).toFixed(2).replace('.',','),n(s.lucro).toFixed(2).replace('.',','),s.obs]}));
     var csv='﻿'+rows.map(function(r){return r.map(q).join(';')}).join('\r\n');
@@ -875,7 +878,7 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
     var dk=Object.keys(days).sort().reverse();
     $('hsDays').innerHTML=dk.length?dk.map(function(d){var arr=days[d],tot=arr.filter(valid).reduce(function(t,s){return t+n(s.total)},0),wd=DSEM[new Date(d+'T12:00:00').getDay()];
       return '<div class="hs-day"><h3>'+fmtDate(d)+' · '+wd+'<span>'+brl.format(tot)+'</span></h3>'+arr.map(function(s){var it=s.itens||[];
-        return '<div class="hs-row'+(valid(s)?'':' cx')+'" data-sale="'+esc(s.id)+'"><div class="who"><b>'+esc(s.cliente||'Cliente não informado')+'</b><small>'+(it.map(function(i){return n(i.qtd)+'x '+i.nome}).join(', ')||'—')+' · '+esc(s.canal||'')+'</small></div><span class="chip s-'+esc(s.status)+'">'+esc(s.status)+'</span><span class="tt">'+brl.format(n(s.total))+'</span></div>'}).join('')+'</div>'}).join('')
+        return '<div class="hs-row'+(valid(s)?'':' cx')+'" data-sale="'+esc(s.id)+'"><div class="who"><b>'+esc(s.cliente||'Cliente não informado')+'</b><small>'+esc(it.map(function(i){return n(i.qtd)+'x '+i.nome}).join(', ')||'—')+' · '+esc(s.canal||'')+'</small></div><span class="chip s-'+esc(s.status)+'">'+esc(s.status)+'</span><span class="tt">'+brl.format(n(s.total))+'</span></div>'}).join('')+'</div>'}).join('')
       :'<p class="empty">Nenhuma venda em '+MESES[+hsMes-1].toLowerCase()+' de '+hsAno+'.</p>'}
   $('hsMonths').addEventListener('click',function(e){var b=e.target.closest('[data-m]');if(!b)return;hsMes=b.getAttribute('data-m');renderHist()});
   $('hsAno').addEventListener('change',function(){hsAno=this.value;renderHist()});
@@ -994,12 +997,20 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
     if(u){$('login').hidden=true;canWrite=true;document.body.classList.remove('ro');$('who').textContent=u.email||'';start()}
     else{prods=[];sales=[];movs=[];prodMap={};render();$('login').hidden=false;setTimeout(function(){$('lEmail').focus()},0)}}
   sb.auth.getSession().then(function(r){onUser(r.data&&r.data.session&&r.data.session.user)});
-  sb.auth.onAuthStateChange(function(ev,session){onUser(session&&session.user)});
+  sb.auth.onAuthStateChange(function(ev,session){onUser(session&&session.user);if(ev==='PASSWORD_RECOVERY')setTimeout(function(){newPwd(true)},300)});
   $('lForm').addEventListener('submit',function(e){e.preventDefault();var b=$('lBtn');b.disabled=true;$('lErr').hidden=true;
     sb.auth.signInWithPassword({email:$('lEmail').value.trim(),password:$('lPass').value}).then(function(r){b.disabled=false;if(r.error){var m=r.error.message||'';
       $('lErr').textContent=/invalid login|invalid credentials/i.test(m)?'E-mail ou senha incorretos.':/not confirmed/i.test(m)?'Confirme o e-mail antes de entrar.':/rate|many/i.test(m)?'Muitas tentativas. Espere alguns minutos.':'Não foi possível entrar agora.';$('lErr').hidden=false}},function(){b.disabled=false;$('lErr').textContent='Não foi possível entrar agora. Verifique a conexão.';$('lErr').hidden=false})});
   $('lReset').addEventListener('click',function(){var em=$('lEmail').value.trim();if(!em){$('lErr').textContent='Digite seu e-mail para receber o link.';$('lErr').hidden=false;return}
     sb.auth.resetPasswordForEmail(em,{redirectTo:location.href.split('#')[0]}).then(function(r){$('lErr').textContent=r.error?'Não foi possível enviar agora.':'Enviamos um link de nova senha para '+em+'.';$('lErr').hidden=false})});
+  function newPwd(rec){openModal('<div class="mh"><h2 id="mTitle">'+(rec?'Crie uma nova senha':'Trocar senha')+'</h2>'+(rec?'':'<button class="x" type="button" data-close aria-label="Fechar">×</button>')+'</div><form id="pwF"><div class="mb"><div class="fld full"><label for="pw1">Nova senha</label><input id="pw1" type="password" autocomplete="new-password" minlength="8" required></div><div class="fld full"><label for="pw2">Repita a nova senha</label><input id="pw2" type="password" autocomplete="new-password" minlength="8" required><span class="hint">Pelo menos 8 caracteres, com letras e números.</span></div><p class="err-msg" id="pwErr" hidden></p></div><div class="mf"><div class="r">'+(rec?'':'<button class="btn" type="button" data-close>Cancelar</button>')+'<button class="btn pri" type="submit">Salvar senha</button></div></div></form>');
+    $('pwF').addEventListener('submit',function(e){e.preventDefault();var a=$('pw1').value,b=$('pw2').value;
+      if(a.length<8||!/[A-Za-z]/.test(a)||!/\d/.test(a)){showErr('pwErr','A senha precisa ter 8 caracteres ou mais, com letras e números.');return}
+      if(a!==b){showErr('pwErr','As duas senhas não são iguais.');return}
+      var bt=e.submitter;busy(bt,true);sb.auth.updateUser({password:a}).then(function(r){busy(bt,false);var m=r.error&&r.error.message||'';
+        if(r.error){showErr('pwErr',/same|different/i.test(m)?'A nova senha precisa ser diferente da atual.':/weak|short|pwned|leaked/i.test(m)?'Senha fraca ou já vazada na internet. Escolha outra.':'Não foi possível salvar agora.');return}
+        closeModal();toast('Senha alterada')},function(){busy(bt,false);showErr('pwErr','Não foi possível salvar agora. Verifique a conexão.')})})}
+  $('chpwd').addEventListener('click',function(){newPwd(false)});
   $('logout').addEventListener('click',function(){sb.auth.signOut()});
 })();
 
