@@ -207,6 +207,48 @@ footer a{text-decoration:none;color:var(--t3)}
 footer a:hover{color:var(--ink)}
 .legal{margin-top:48px;padding-top:22px;border-top:1px solid rgba(43,26,34,.1);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:13px}
 
+/* checkout */
+.ck{position:fixed;inset:0;z-index:95;background:rgba(31,18,8,.5);display:flex;justify-content:flex-end}
+.ck-sheet{background:#fff;width:min(560px,100%);height:100%;display:flex;flex-direction:column;box-shadow:-30px 0 60px rgba(31,18,8,.25);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.ck-h{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.ck-h h3{font-size:22px;flex:1}
+.ck-steps{display:flex;gap:6px;padding:12px 20px 0;font-size:12.5px;font-weight:700;color:var(--mute)}
+.ck-steps span{flex:1;padding-top:8px;border-top:3px solid var(--line)}
+.ck-steps span.on{border-color:var(--orange);color:var(--ink)}
+.ck-body{flex:1;overflow:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:18px}
+.ck-sec{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.ck-sec h4{grid-column:1 / -1;margin:0;font-family:var(--display);font-size:16px;display:flex;align-items:center;gap:8px}
+.ck-sec h4 i{width:24px;height:24px;border-radius:50%;background:var(--orange);color:#fff;font-style:normal;font-size:12.5px;display:grid;place-items:center}
+.cf{display:flex;flex-direction:column;gap:5px;min-width:0;grid-column:span 6}
+.cf.h1{grid-column:span 1}.cf.h3{grid-column:span 3}.cf.h2{grid-column:span 2}.cf.h4{grid-column:span 4}
+.cf label{font-size:13px;font-weight:700;color:var(--mute)}
+.cf label b{color:var(--orange-2)}
+.cf input,.cf select,.cf textarea{min-height:46px;border:1px solid var(--line);border-radius:11px;padding:10px 12px;font:500 15.5px var(--body);color:var(--ink);background:#fffaf6;outline:none;width:100%}
+.cf textarea{min-height:70px;resize:vertical}
+.cf input:focus,.cf select:focus,.cf textarea:focus{border-color:var(--orange);background:#fff}
+.cf.bad input,.cf.bad select{border-color:#c62f3a;background:#fff5f5}
+.cf small{font-size:12px;color:var(--mute)}
+.cf.bad small.err{color:#c62f3a}
+.pays{grid-column:1 / -1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pays label{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer;font-weight:600;min-height:48px}
+.pays input{accent-color:var(--orange);width:18px;height:18px}
+.pays label:has(input:checked){border-color:var(--orange);background:#fff3ea}
+.ck-sum{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fffaf6;display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+.ck-sum div{display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums}
+.ck-sum .t{font-family:var(--display);font-weight:800;font-size:20px;padding-top:8px;border-top:1px solid var(--line)}
+.ck-sum small{color:var(--mute)}
+.ck-f{padding:14px 20px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.ck-f .btn{min-height:54px;font-size:16px;width:100%}
+.btn-wa{background:#1f9d55!important;color:#fff!important;box-shadow:0 10px 24px rgba(31,157,85,.3)}
+.btn-wa:hover{filter:brightness(1.05)}
+.ck-f p{font-size:12.5px;color:var(--mute);text-align:center}
+.ck-ok{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:30px}
+.ck-ok .big{width:76px;height:76px;border-radius:50%;background:#e6f6ed;display:grid;place-items:center}
+.ck-ok svg{width:40px;height:40px;fill:none;stroke:#1f9d55;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.ck-ok h3{font-size:26px}
+.ck-ok p{color:var(--mute);max-width:36ch}
+@media (max-width:520px){.cf.h3,.cf.h2,.cf.h4{grid-column:span 6}.cf.half{grid-column:span 3}.cf.h1{grid-column:span 2}.cf.h2:has(#cCid){grid-column:span 4}.pays{grid-template-columns:1fr}}
+
 /* carrinho */
 .scrim{position:fixed;inset:0;background:rgba(43,26,34,.4);z-index:70}
 .drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--white);z-index:80;display:flex;flex-direction:column;box-shadow:-30px 0 60px rgba(42,6,9,.25);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
@@ -645,9 +687,61 @@ footer a:hover{color:#fff!important}
   <div class="df">
     <div class="sum"><span>Total</span><b id="total">R$ 0,00</b></div>
     <button class="btn btn-orange" type="button" id="checkout">Finalizar compra</button>
-    <p class="note" id="note">Demonstração: aqui entra o checkout da loja (Pix, cartão e frete).</p>
+    <p class="note" id="note">Na próxima etapa você informa seus dados e envia o pedido pelo WhatsApp.</p>
   </div>
 </aside>
+<div class="ck" id="ck" hidden>
+  <div class="ck-sheet" role="dialog" aria-modal="true" aria-labelledby="ckTitle">
+    <div class="ck-h"><button class="x" type="button" id="ckBack" aria-label="Voltar ao carrinho">‹</button><h3 id="ckTitle">Finalizar pedido</h3><button class="x" type="button" id="ckClose" aria-label="Fechar">×</button></div>
+    <div class="ck-steps"><span class="on">1. Carrinho</span><span class="on">2. Seus dados</span><span id="ckStep3">3. WhatsApp</span></div>
+    <form id="ckForm" novalidate style="display:flex;flex-direction:column;flex:1;min-height:0">
+    <div class="ck-body" id="ckBody">
+      <div class="ck-sec">
+        <h4><i>1</i>Seus dados</h4>
+        <div class="cf"><label for="cNome">Nome completo <b>*</b></label><input id="cNome" autocomplete="name" required data-msg="Informe seu nome completo."><small class="err"></small></div>
+        <div class="cf h3"><label for="cCpf">CPF</label><input id="cCpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14"><small>Opcional, para nota fiscal.</small></div>
+        <div class="cf h3"><label for="cEmail">E-mail <b>*</b></label><input id="cEmail" type="email" autocomplete="email" required data-msg="Informe um e-mail válido."><small class="err"></small></div>
+        <div class="cf h3"><label for="cZap">WhatsApp <b>*</b></label><input id="cZap" type="tel" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" required data-msg="Informe o WhatsApp com DDD."><small class="err"></small></div>
+        <div class="cf h3"><label for="cTel">Outro telefone</label><input id="cTel" type="tel" inputmode="tel" placeholder="(00) 0000-0000"><small>Opcional.</small></div>
+      </div>
+      <div class="ck-sec">
+        <h4><i>2</i>Endereço de entrega</h4>
+        <div class="cf h2 half"><label for="cCep">CEP <b>*</b></label><input id="cCep" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9" required data-msg="Informe um CEP válido."><small class="err" id="cepMsg"></small></div>
+        <div class="cf h4"><label for="cRua">Rua / Avenida <b>*</b></label><input id="cRua" autocomplete="address-line1" required data-msg="Informe a rua."><small class="err"></small></div>
+        <div class="cf h2 half"><label for="cNum">Número <b>*</b></label><input id="cNum" inputmode="numeric" required data-msg="Informe o número (ou S/N)."><small class="err"></small></div>
+        <div class="cf h4"><label for="cComp">Complemento</label><input id="cComp" autocomplete="address-line2" placeholder="Apto, bloco, casa…"></div>
+        <div class="cf h3"><label for="cBairro">Bairro <b>*</b></label><input id="cBairro" required data-msg="Informe o bairro."><small class="err"></small></div>
+        <div class="cf h2"><label for="cCid">Cidade <b>*</b></label><input id="cCid" autocomplete="address-level2" required data-msg="Informe a cidade."><small class="err"></small></div>
+        <div class="cf h1"><label for="cUf">UF <b>*</b></label><input id="cUf" maxlength="2" autocomplete="address-level1" required data-msg="UF" style="text-transform:uppercase"><small class="err"></small></div>
+        <div class="cf"><label for="cRef">Ponto de referência</label><input id="cRef" placeholder="Opcional"></div>
+      </div>
+      <div class="ck-sec">
+        <h4><i>3</i>Pagamento</h4>
+        <div class="pays" role="radiogroup" aria-label="Forma de pagamento">
+          <label><input type="radio" name="pag" value="Pix" checked>Pix</label>
+          <label><input type="radio" name="pag" value="Cartão de crédito">Cartão de crédito</label>
+          <label><input type="radio" name="pag" value="Cartão de débito">Cartão de débito</label>
+          <label><input type="radio" name="pag" value="Boleto">Boleto</label>
+        </div>
+        <div class="cf"><label for="cObs">Observações</label><textarea id="cObs" placeholder="Algum detalhe sobre o pedido ou a entrega?"></textarea></div>
+      </div>
+      <div class="ck-sum" id="ckSum"></div>
+    </div>
+    <div class="ck-f" id="ckFoot">
+      <button class="btn btn-wa" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"></path></svg>Enviar pedido pelo WhatsApp</button>
+      <p>Você será levado ao WhatsApp da Quality 3D com o pedido pronto. O frete e o pagamento são confirmados por lá.</p>
+    </div>
+    </form>
+    <div class="ck-ok" id="ckOk" hidden>
+      <span class="big"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"></path></svg></span>
+      <h3>Pedido montado!</h3>
+      <p>Abrimos o WhatsApp da Quality 3D com o seu pedido. É só tocar em <b>enviar</b> na conversa.</p>
+      <a class="btn btn-wa" id="ckAgain" href="#" target="_blank" rel="noopener" style="min-height:52px;padding:0 22px">Abrir o WhatsApp de novo</a>
+      <button class="btn btn-line" type="button" id="ckDone" style="min-height:48px">Voltar para a loja</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" hidden><span id="toastTxt"></span><button type="button" id="toastOpen">Ver carrinho</button></div>
 
 <script>
@@ -677,7 +771,48 @@ footer a:hover{color:#fff!important}
   $('items').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var k=b.getAttribute('data-k');cart[k]+=+b.getAttribute('data-d');if(cart[k]<=0)delete cart[k];render()});
   $('cartBtn').addEventListener('click',open);$('toastOpen').addEventListener('click',open);$('closeCart').addEventListener('click',close);$('scrim').addEventListener('click',close);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
-  $('checkout').addEventListener('click',function(){$('note').textContent=count()?'Pedido pronto para o checkout. Na versão final, este botão leva ao pagamento.':'Adicione um filamento antes de finalizar.'});
+  /* checkout */
+  var WA='5518996488840';
+  function openCk(){if(!count()){$('note').textContent='Adicione um filamento antes de finalizar.';return}close();
+    try{var sv=JSON.parse(localStorage.getItem('q3dCliente')||'{}');['cNome','cCpf','cEmail','cZap','cTel','cCep','cRua','cNum','cComp','cBairro','cCid','cUf','cRef'].forEach(function(id){if(sv[id]&&!$(id).value)$(id).value=sv[id]})}catch(e){}
+    var tot=0,h='';Object.keys(cart).forEach(function(k){var p=P[k];tot+=p[1]*cart[k];h+='<div><span>'+cart[k]+'x '+p[0]+'</span><span>'+brl.format(p[1]*cart[k])+'</span></div>'});
+    $('ckSum').innerHTML=h+'<div class="t"><span>Total dos produtos</span><span>'+brl.format(tot)+'</span></div><small>Frete calculado e confirmado no WhatsApp.</small>';
+    $('ckForm').hidden=false;$('ckOk').hidden=true;$('ckStep3').classList.remove('on');$('ck').hidden=false;$('ckBody').scrollTop=0;setTimeout(function(){$('cNome').focus()},50)}
+  function closeCk(){$('ck').hidden=true}
+  $('checkout').addEventListener('click',openCk);
+  $('ckClose').addEventListener('click',closeCk);$('ckBack').addEventListener('click',function(){closeCk();open()});
+  $('ck').addEventListener('click',function(e){if(e.target===$('ck'))closeCk()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('ck').hidden)closeCk()});
+  function dig(v){return String(v||'').replace(/\D/g,'')}
+  function maskTel(el){var d=dig(el.value).slice(0,11);el.value=d.length>10?'('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7):d.length>6?'('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6):d.length>2?'('+d.slice(0,2)+') '+d.slice(2):d}
+  ['cZap','cTel'].forEach(function(id){$(id).addEventListener('input',function(){maskTel(this)})});
+  $('cCpf').addEventListener('input',function(){var d=dig(this.value).slice(0,11);this.value=d.replace(/^(\d{3})(\d)/,'$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/,'$1.$2.$3').replace(/\.(\d{3})(\d)/,'.$1-$2')});
+  $('cCep').addEventListener('input',function(){var d=dig(this.value).slice(0,8);this.value=d.length>5?d.slice(0,5)+'-'+d.slice(5):d;if(d.length===8)buscaCep(d)});
+  function buscaCep(d){$('cepMsg').textContent='Buscando endereço…';
+    fetch('https://viacep.com.br/ws/'+d+'/json/').then(function(r){return r.json()}).then(function(j){if(j.erro){$('cepMsg').textContent='CEP não encontrado. Preencha o endereço abaixo.';return}
+      if(j.logradouro)$('cRua').value=j.logradouro;if(j.bairro)$('cBairro').value=j.bairro;$('cCid').value=j.localidade||'';$('cUf').value=j.uf||'';$('cepMsg').textContent='';$('cNum').focus()})
+    .catch(function(){$('cepMsg').textContent='Não foi possível buscar o CEP. Preencha o endereço abaixo.'})}
+  function check(){var ok=true,first=null;
+    $('ckForm').querySelectorAll('[required]').forEach(function(el){var v=el.value.trim(),bad=!v;
+      if(el.id==='cEmail')bad=!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);if(el.id==='cZap')bad=dig(v).length<10;if(el.id==='cCep')bad=dig(v).length!==8;if(el.id==='cUf')bad=!/^[A-Za-z]{2}$/.test(v);if(el.id==='cNome')bad=v.split(/\s+/).length<2;
+      var f=el.closest('.cf');f.classList.toggle('bad',bad);var s=f.querySelector('small.err');if(s&&el.id!=='cCep')s.textContent=bad?el.getAttribute('data-msg'):'';if(el.id==='cCep'&&bad)s.textContent=el.getAttribute('data-msg');
+      if(bad){ok=false;if(!first)first=el}});
+    if(first){first.focus();first.scrollIntoView({block:'center',behavior:'smooth'})}return ok}
+  $('ckForm').addEventListener('submit',function(e){e.preventDefault();if(!check())return;
+    var v=function(id){return $(id).value.trim()},pag=$('ckForm').querySelector('input[name=pag]:checked').value,tot=0,L=[];
+    L.push('*NOVO PEDIDO - QUALITY 3D*','','*Itens:*');
+    Object.keys(cart).forEach(function(k){var p=P[k];tot+=p[1]*cart[k];L.push('- '+cart[k]+'x '+p[0]+' ('+brl.format(p[1])+' cada) = '+brl.format(p[1]*cart[k]))});
+    L.push('*Total dos produtos: '+brl.format(tot)+'*','(frete a combinar)','','*Cliente*','Nome: '+v('cNome'));
+    if(v('cCpf'))L.push('CPF: '+v('cCpf'));L.push('E-mail: '+v('cEmail'),'WhatsApp: '+v('cZap'));if(v('cTel'))L.push('Outro telefone: '+v('cTel'));
+    L.push('','*Endereço de entrega*',v('cRua')+', '+v('cNum')+(v('cComp')?' - '+v('cComp'):''),v('cBairro')+' - '+v('cCid')+'/'+v('cUf').toUpperCase(),'CEP: '+v('cCep'));
+    if(v('cRef'))L.push('Referência: '+v('cRef'));L.push('','*Pagamento:* '+pag);if(v('cObs'))L.push('*Observações:* '+v('cObs'));
+    var url='https://wa.me/'+WA+'?text='+encodeURIComponent(L.join('\n'));
+    try{var sv={};['cNome','cCpf','cEmail','cZap','cTel','cCep','cRua','cNum','cComp','cBairro','cCid','cUf','cRef'].forEach(function(id){sv[id]=v(id)});localStorage.setItem('q3dCliente',JSON.stringify(sv))}catch(x){}
+    $('ckAgain').href=url;$('ckForm').hidden=true;$('ckOk').hidden=false;$('ckStep3').classList.add('on');
+    var w=window.open(url,'_blank');if(w){try{w.opener=null}catch(x){}}else{location.href=url}});
+  $('ckForm').addEventListener('input',function(e){var f=e.target.closest('.cf');if(f&&f.classList.contains('bad')){f.classList.remove('bad');var s=f.querySelector('small.err');if(s&&e.target.id!=='cCep')s.textContent=''}});
+  $('ckDone').addEventListener('click',function(){cart={};render();closeCk();$('note').textContent=''});
+
   render(); $('cartCount').classList.remove('bump');
 
   // filtros
