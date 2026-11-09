@@ -2,6 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://xolkrxcdtmebtrphorvh.supabase.co wss://xolkrxcdtmebtrphorvh.supabase.co https://viacep.com.br; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Quality 3D: filamentos PLA, Silk e kits para impressão 3D.">
 <title>Quality 3D</title>
@@ -233,6 +235,11 @@ footer a:hover{color:var(--ink)}
 .pays label{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer;font-weight:600;min-height:48px}
 .pays input{accent-color:var(--orange);width:18px;height:18px}
 .pays label:has(input:checked){border-color:var(--orange);background:#fff3ea}
+.ck-chk{grid-column:1 / -1;display:flex;align-items:flex-start;gap:10px;font-size:13.5px;line-height:1.45;cursor:pointer;color:var(--ink)}
+.ck-chk input{accent-color:var(--orange);width:18px;height:18px;flex:none;margin-top:1px}
+.ck-chk b{color:var(--orange-2)}
+.ck-chk.bad span{color:#c62f3a;font-weight:600}
+.hpf{position:absolute!important;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
 .ck-sum{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fffaf6;display:flex;flex-direction:column;gap:8px;font-size:14.5px}
 .ck-sum div{display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums}
 .ck-sum .t{font-family:var(--display);font-weight:800;font-size:20px;padding-top:8px;border-top:1px solid var(--line)}
@@ -723,7 +730,10 @@ footer a:hover{color:#fff!important}
           <label><input type="radio" name="pag" value="Cartão de débito">Cartão de débito</label>
           <label><input type="radio" name="pag" value="Boleto">Boleto</label>
         </div>
-        <div class="cf"><label for="cObs">Observações</label><textarea id="cObs" placeholder="Algum detalhe sobre o pedido ou a entrega?"></textarea></div>
+        <div class="cf"><label for="cObs">Observações</label><textarea id="cObs" maxlength="500" placeholder="Algum detalhe sobre o pedido ou a entrega?"></textarea></div>
+        <div class="hpf" aria-hidden="true"><label for="cSite">Não preencha</label><input id="cSite" tabindex="-1" autocomplete="off"></div>
+        <label class="ck-chk"><input type="checkbox" id="cLgpd"><span>Autorizo a Quality 3D a usar meus dados só para processar, entregar e falar comigo sobre este pedido. <b>*</b></span></label>
+        <label class="ck-chk"><input type="checkbox" id="cLembrar"><span>Lembrar meus dados neste aparelho para a próxima compra</span></label>
       </div>
       <div class="ck-sum" id="ckSum"></div>
     </div>
@@ -745,7 +755,7 @@ footer a:hover{color:#fff!important}
 
 <div class="toast" id="toast" hidden><span id="toastTxt"></span><button type="button" id="toastOpen">Ver carrinho</button></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
 <script>
 (function(){
   var IMG={dourado:document.querySelector('[data-id="dourado"]').closest('.prod').querySelector('img').src,
@@ -789,7 +799,7 @@ footer a:hover{color:#fff!important}
   /* checkout */
   var WA='5518996488840';
   function openCk(){if(!count()){$('note').textContent='Adicione um filamento antes de finalizar.';return}close();
-    try{var sv=JSON.parse(localStorage.getItem('q3dCliente')||'{}');['cNome','cCpf','cEmail','cZap','cTel','cCep','cRua','cNum','cComp','cBairro','cCid','cUf','cRef'].forEach(function(id){if(sv[id]&&!$(id).value)$(id).value=sv[id]})}catch(e){}
+    try{var sv=JSON.parse(localStorage.getItem('q3dCliente')||'{}');if(sv.cNome)$('cLembrar').checked=true;['cNome','cCpf','cEmail','cZap','cTel','cCep','cRua','cNum','cComp','cBairro','cCid','cUf','cRef'].forEach(function(id){if(sv[id]&&!$(id).value)$(id).value=sv[id]})}catch(e){}
     var tot=0,h='';Object.keys(cart).forEach(function(k){var p=P[k];tot+=p[1]*cart[k];h+='<div><span>'+cart[k]+'x '+p[0]+'</span><span>'+brl.format(p[1]*cart[k])+'</span></div>'});
     $('ckSum').innerHTML=h+'<div class="t"><span>Total dos produtos</span><span>'+brl.format(tot)+'</span></div><small>Frete calculado e confirmado no WhatsApp.</small>';
     $('ckForm').hidden=false;$('ckOk').hidden=true;$('ckStep3').classList.remove('on');$('ck').hidden=false;$('ckBody').scrollTop=0;setTimeout(function(){$('cNome').focus()},50)}
@@ -812,6 +822,7 @@ footer a:hover{color:#fff!important}
       if(el.id==='cEmail')bad=!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);if(el.id==='cZap')bad=dig(v).length<10;if(el.id==='cCep')bad=dig(v).length!==8;if(el.id==='cUf')bad=!/^[A-Za-z]{2}$/.test(v);if(el.id==='cNome')bad=v.split(/\s+/).length<2;
       var f=el.closest('.cf');f.classList.toggle('bad',bad);var s=f.querySelector('small.err');if(s&&el.id!=='cCep')s.textContent=bad?el.getAttribute('data-msg'):'';if(el.id==='cCep'&&bad)s.textContent=el.getAttribute('data-msg');
       if(bad){ok=false;if(!first)first=el}});
+    var lg=$('cLgpd');if(lg){var lb=lg.closest('.ck-chk');lb.classList.toggle('bad',!lg.checked);if(!lg.checked){ok=false;if(!first)first=lg}}
     if(first){first.focus();first.scrollIntoView({block:'center',behavior:'smooth'})}return ok}
   $('ckForm').addEventListener('submit',function(e){e.preventDefault();if(!check())return;
     var v=function(id){return $(id).value.trim()},pag=$('ckForm').querySelector('input[name=pag]:checked').value,tot=0,L=[];
@@ -822,10 +833,11 @@ footer a:hover{color:#fff!important}
     L.push('','*Endereço de entrega*',v('cRua')+', '+v('cNum')+(v('cComp')?' - '+v('cComp'):''),v('cBairro')+' - '+v('cCid')+'/'+v('cUf').toUpperCase(),'CEP: '+v('cCep'));
     if(v('cRef'))L.push('Referência: '+v('cRef'));L.push('','*Pagamento:* '+pag);if(v('cObs'))L.push('*Observações:* '+v('cObs'));
     var url='https://wa.me/'+WA+'?text='+encodeURIComponent(L.join('\n'));
-    try{var sv={};['cNome','cCpf','cEmail','cZap','cTel','cCep','cRua','cNum','cComp','cBairro','cCid','cUf','cRef'].forEach(function(id){sv[id]=v(id)});localStorage.setItem('q3dCliente',JSON.stringify(sv))}catch(x){}
+    if(!$('cLembrar').checked){try{localStorage.removeItem('q3dCliente')}catch(x){}}else try{var sv={};['cNome','cCpf','cEmail','cZap','cTel','cCep','cRua','cNum','cComp','cBairro','cCid','cUf','cRef'].forEach(function(id){sv[id]=v(id)});localStorage.setItem('q3dCliente',JSON.stringify(sv))}catch(x){}
     $('ckAgain').href=url;$('ckForm').hidden=true;$('ckOk').hidden=false;$('ckStep3').classList.add('on');
-    $('ckWarn').hidden=true;var dados={codigo:COD,pagamento:pag,obs:v('cObs'),cliente:{nome:v('cNome'),cpf:v('cCpf'),email:v('cEmail'),whatsapp:v('cZap'),telefone:v('cTel')},endereco:{cep:v('cCep'),rua:v('cRua'),numero:v('cNum'),complemento:v('cComp'),bairro:v('cBairro'),cidade:v('cCid'),uf:v('cUf').toUpperCase(),referencia:v('cRef')}};
+    $('ckWarn').hidden=true;var dados={hp:$('cSite').value,codigo:COD,pagamento:pag,obs:v('cObs'),cliente:{nome:v('cNome'),cpf:v('cCpf'),email:v('cEmail'),whatsapp:v('cZap'),telefone:v('cTel')},endereco:{cep:v('cCep'),rua:v('cRua'),numero:v('cNum'),complemento:v('cComp'),bairro:v('cBairro'),cidade:v('cCid'),uf:v('cUf').toUpperCase(),referencia:v('cRef')}};
     var w=window.open(url,'_blank');if(w){try{w.opener=null}catch(x){}}registrar(dados);if(!w){setTimeout(function(){location.href=url},900)}});
+  $('ckForm').addEventListener('change',function(e){if(e.target.id==='cLgpd'&&e.target.checked)e.target.closest('.ck-chk').classList.remove('bad')});
   $('ckForm').addEventListener('input',function(e){var f=e.target.closest('.cf');if(f&&f.classList.contains('bad')){f.classList.remove('bad');var s=f.querySelector('small.err');if(s&&e.target.id!=='cCep')s.textContent=''}});
   $('ckDone').addEventListener('click',function(){cart={};render();closeCk();$('note').textContent=''});
 
