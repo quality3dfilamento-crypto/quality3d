@@ -812,7 +812,7 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
     unsubs.push(db.collection('movimentos').orderBy('criadoEm','desc').limit(500).onSnapshot(function(snap){movs=snap.docs.map(function(d){var o=Object.assign({},d.data());o.id=d.id;return o});render()},function(){}));
     unsubs.push(db.collection('vendas').onSnapshot(function(snap){sales=snap.docs.map(function(d){var o=Object.assign({},d.data());o.id=d.id;return o});loaded.s=true;ready();render()},denied));
   }
-  var current=null;
+  var current;
   function onUser(u){var id=u&&u.id||null;if(id===current)return;current=id;
     unsubs.forEach(function(f){f()});unsubs=[];clearTimeout(timer);notice('');
     if(u){$('login').hidden=true;canWrite=true;document.body.classList.remove('ro');$('who').textContent=u.email||'';start()}
