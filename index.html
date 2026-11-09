@@ -736,6 +736,7 @@ footer a:hover{color:#fff!important}
       <span class="big"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"></path></svg></span>
       <h3>Pedido montado!</h3>
       <p>Abrimos o WhatsApp da Quality 3D com o seu pedido. É só tocar em <b>enviar</b> na conversa.</p>
+      <p id="ckWarn" hidden style="color:#b26b00;font-size:13px;max-width:36ch">Não conseguimos registrar o pedido no sistema agora, mas ele foi montado no WhatsApp. É só enviar a mensagem.</p>
       <a class="btn btn-wa" id="ckAgain" href="#" target="_blank" rel="noopener" style="min-height:52px;padding:0 22px">Abrir o WhatsApp de novo</a>
       <button class="btn btn-line" type="button" id="ckDone" style="min-height:48px">Voltar para a loja</button>
     </div>
@@ -744,6 +745,7 @@ footer a:hover{color:#fff!important}
 
 <div class="toast" id="toast" hidden><span id="toastTxt"></span><button type="button" id="toastOpen">Ver carrinho</button></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 (function(){
   var IMG={dourado:document.querySelector('[data-id="dourado"]').closest('.prod').querySelector('img').src,
@@ -771,6 +773,19 @@ footer a:hover{color:#fff!important}
   $('items').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var k=b.getAttribute('data-k');cart[k]+=+b.getAttribute('data-d');if(cart[k]<=0)delete cart[k];render()});
   $('cartBtn').addEventListener('click',open);$('toastOpen').addEventListener('click',open);$('closeCart').addEventListener('click',close);$('scrim').addEventListener('click',close);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+  /* integração com o sistema (Supabase) */
+  var SBU='https://xolkrxcdtmebtrphorvh.supabase.co',SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvbGtyeGNkdG1lYnRycGhvcnZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyNTM0NTQsImV4cCI6MjEwOTgyOTQ1NH0.L4YVRuPt_EQGCpFQ30TxjYXiPAYdpx8S1qc2u2lAGc0';
+  var sbc=null;try{if(window.supabase)sbc=window.supabase.createClient(SBU,SBK,{auth:{persistSession:false,autoRefreshToken:false}})}catch(e){}
+  var MAP={dourado:['pla-dourado'],azul:['pla-azul-translucido'],silk:['kit-pla-silk'],preto:['pla-preto'],combo3:['pla-dourado','pla-azul-translucido','pla-preto'],preto2:['pla-preto','pla-preto'],silkpreto:['kit-pla-silk','pla-preto']};
+  var BASE={'pla-dourado':89.9,'pla-azul-translucido':84.9,'kit-pla-silk':149.9,'pla-preto':79.9};
+  function itensPedido(){var acc={},order=[];Object.keys(cart).forEach(function(k){var ids=MAP[k]||[],q=cart[k],price=P[k][1],sum=ids.reduce(function(t,id){return t+(BASE[id]||1)},0);
+    ids.forEach(function(id){var part=price*(BASE[id]||1)/sum,a=acc[id];if(!a){a=acc[id]={produtoId:id,qtd:0,total:0};order.push(id)}a.qtd+=q;a.total+=part*q})});
+    return order.map(function(id){var a=acc[id];return {produtoId:id,qtd:a.qtd,preco:Math.round(a.total/a.qtd*100)/100}})}
+  function registrar(dados){if(!sbc){$('ckWarn').hidden=false;return}
+    sbc.rpc('criar_pedido',{p:Object.assign({itens:itensPedido()},dados)}).then(function(r){if(r.error){$('ckWarn').hidden=false}},function(){$('ckWarn').hidden=false})}
+  if(sbc)sbc.rpc('catalogo').then(function(r){if(r.error||!r.data)return;var inv={};Object.keys(MAP).forEach(function(k){if(MAP[k].length===1)inv[MAP[k][0]]=k});
+    r.data.forEach(function(row){var k=inv[row.id];if(!k||row.preco==null||!(+row.preco>0))return;var pr=+row.preco;BASE[row.id]=pr;P[k][1]=pr;
+      document.querySelectorAll('.add[data-id="'+k+'"]').forEach(function(b){var el=b.closest('.prod')&&b.closest('.prod').querySelector('.price');if(el&&el.firstChild)el.firstChild.nodeValue=brl.format(pr)})});render()},function(){});
   /* checkout */
   var WA='5518996488840';
   function openCk(){if(!count()){$('note').textContent='Adicione um filamento antes de finalizar.';return}close();
@@ -800,7 +815,7 @@ footer a:hover{color:#fff!important}
     if(first){first.focus();first.scrollIntoView({block:'center',behavior:'smooth'})}return ok}
   $('ckForm').addEventListener('submit',function(e){e.preventDefault();if(!check())return;
     var v=function(id){return $(id).value.trim()},pag=$('ckForm').querySelector('input[name=pag]:checked').value,tot=0,L=[];
-    L.push('*NOVO PEDIDO - QUALITY 3D*','','*Itens:*');
+    var COD='Q3D-'+Date.now().toString(36).slice(-4).toUpperCase()+Math.random().toString(36).slice(2,4).toUpperCase();L.push('*NOVO PEDIDO - QUALITY 3D*','Pedido nº '+COD,'','*Itens:*');
     Object.keys(cart).forEach(function(k){var p=P[k];tot+=p[1]*cart[k];L.push('- '+cart[k]+'x '+p[0]+' ('+brl.format(p[1])+' cada) = '+brl.format(p[1]*cart[k]))});
     L.push('*Total dos produtos: '+brl.format(tot)+'*','(frete a combinar)','','*Cliente*','Nome: '+v('cNome'));
     if(v('cCpf'))L.push('CPF: '+v('cCpf'));L.push('E-mail: '+v('cEmail'),'WhatsApp: '+v('cZap'));if(v('cTel'))L.push('Outro telefone: '+v('cTel'));
@@ -809,7 +824,8 @@ footer a:hover{color:#fff!important}
     var url='https://wa.me/'+WA+'?text='+encodeURIComponent(L.join('\n'));
     try{var sv={};['cNome','cCpf','cEmail','cZap','cTel','cCep','cRua','cNum','cComp','cBairro','cCid','cUf','cRef'].forEach(function(id){sv[id]=v(id)});localStorage.setItem('q3dCliente',JSON.stringify(sv))}catch(x){}
     $('ckAgain').href=url;$('ckForm').hidden=true;$('ckOk').hidden=false;$('ckStep3').classList.add('on');
-    var w=window.open(url,'_blank');if(w){try{w.opener=null}catch(x){}}else{location.href=url}});
+    $('ckWarn').hidden=true;var dados={codigo:COD,pagamento:pag,obs:v('cObs'),cliente:{nome:v('cNome'),cpf:v('cCpf'),email:v('cEmail'),whatsapp:v('cZap'),telefone:v('cTel')},endereco:{cep:v('cCep'),rua:v('cRua'),numero:v('cNum'),complemento:v('cComp'),bairro:v('cBairro'),cidade:v('cCid'),uf:v('cUf').toUpperCase(),referencia:v('cRef')}};
+    var w=window.open(url,'_blank');if(w){try{w.opener=null}catch(x){}}registrar(dados);if(!w){setTimeout(function(){location.href=url},900)}});
   $('ckForm').addEventListener('input',function(e){var f=e.target.closest('.cf');if(f&&f.classList.contains('bad')){f.classList.remove('bad');var s=f.querySelector('small.err');if(s&&e.target.id!=='cCep')s.textContent=''}});
   $('ckDone').addEventListener('click',function(){cart={};render();closeCk();$('note').textContent=''});
 
