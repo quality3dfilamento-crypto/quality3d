@@ -282,6 +282,31 @@ td .sub{display:block;color:var(--mute);font-size:12.5px}
 .lbox h1{font-size:24px;font-weight:900;text-align:center}
 .lbox>p{text-align:center;color:var(--mute);font-size:14px}
 .linkbtn{background:none;border:0;color:var(--orange-2);font-weight:700;cursor:pointer;padding:6px}
+/* configurações */
+.cf-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.cf-grid h2{margin:0 0 4px}
+.cf-note{color:var(--mute);font-size:13px;margin:0 0 14px}
+.cf-prt{display:flex;flex-direction:column;gap:12px}
+.cf-prt .cf-note{margin:0}
+.cf-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cf-l{width:52px;font-size:13px;font-weight:700;color:var(--mute)}
+.cf-chk{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:#fffcfa}
+.cf-chk:has(input:checked){border-color:#ffc49a;background:var(--soft)}
+.cf-chk input{accent-color:var(--orange);width:20px;height:20px;flex:none;margin-top:1px}
+.cf-chk b{display:block;font-size:14px}
+.cf-chk small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}
+.cf-act{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cf-saved{font-size:13px;font-weight:700;color:var(--ok)}
+.cf-prev-card{position:sticky;top:16px}
+.cf-prev{background:repeating-linear-gradient(45deg,#f6ece5 0 10px,#fbf4ef 10px 20px);border-radius:12px;padding:16px;display:flex;justify-content:center;overflow:auto;max-height:70vh}
+.cf-prev iframe{border:0;background:#fff;box-shadow:0 10px 30px rgba(42,18,6,.15);max-width:100%;display:block}
+.cf-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.cf-form .full{grid-column:1 / -1}
+.cf-form textarea{resize:vertical;font:inherit}
+.cf-help ol{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.5}
+.cf-help code{background:var(--soft);padding:1px 6px;border-radius:6px;font-family:var(--mono);font-size:12.5px;word-break:break-all}
+@media (max-width:1000px){.cf-grid{grid-template-columns:1fr}.cf-prev-card{position:static}}
+@media (max-width:560px){.cf-form{grid-template-columns:1fr}.cf-l{width:100%}}
 /* caixa */
 .cx-dia{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
 .cx-dia div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px;min-width:0}
@@ -441,6 +466,7 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
       <a class="tab" href="#historico" data-view="historico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Histórico</a>
       <a class="tab" href="#estoque" data-view="estoque"><svg viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"></path><path d="M3 8l9 5 9-5M12 13v8"></path></svg>Estoque</a>
       <a class="tab" href="#produtos" data-view="produtos"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 3v6M4.2 16.5l5.2-3M19.8 16.5l-5.2-3"></path></svg>Produtos</a>
+      <a class="tab" href="#config" data-view="config"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M7 14h10v7H7z"></path></svg>Configurações</a>
     </nav>
     <a class="cat-link" href="https://claude.ai/artifact/6KDNTrryZEdACp8vgioJ8t" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>Ver catálogo digital</a>
     <div class="foot" style="margin-top:0"><b>Conectado como</b><span id="who" style="word-break:break-all"></span><button type="button" id="logout" style="display:block;margin-top:8px;background:rgba(42,18,6,.22);border:0;color:#fff;padding:8px 12px;border-radius:9px;font-weight:700;cursor:pointer">Sair</button><button type="button" id="chpwd" style="display:block;margin-top:6px;background:none;border:0;color:#fff;opacity:.85;padding:4px 0;font-weight:600;font-size:13px;text-decoration:underline;cursor:pointer">Trocar senha</button></div>
@@ -488,6 +514,56 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
         <div class="card"><h2>Mais vendidos <span>quantidade</span></h2><div class="bars" id="topList"></div></div>
         <div class="card"><h2>Por canal <span>faturamento</span></h2><div class="bars" id="chList"></div></div>
         <div class="card"><h2>Últimas vendas</h2><div class="list" id="lastList"></div></div>
+      </div>
+    </section>
+
+    <!-- CONFIGURACOES -->
+    <section id="v-config" hidden>
+      <div class="top">
+        <div><h1>Configurações</h1><p>Impressora do caixa e os dados que saem no comprovante.</p></div>
+      </div>
+      <div class="cf-grid">
+        <div class="card cf-prt">
+          <h2>Impressora deste computador</h2>
+          <p class="cf-note">Fica salvo só neste aparelho. Configure em cada computador ou tablet que for usar como caixa.</p>
+          <div class="cf-row"><span class="cf-l">Papel</span><div class="seg" id="prPapel"><button type="button" data-v="80">Bobina 80 mm</button><button type="button" data-v="58">Bobina 58 mm</button><button type="button" data-v="A4">Folha A4</button></div></div>
+          <div class="cf-row"><span class="cf-l">Letra</span><div class="seg" id="prFonte"><button type="button" data-v="P">Pequena</button><button type="button" data-v="M">Média</button><button type="button" data-v="G">Grande</button></div></div>
+          <div class="cf-row"><span class="cf-l">Vias</span><div class="seg" id="prVias"><button type="button" data-v="1">1 via</button><button type="button" data-v="2">2 vias</button><button type="button" data-v="3">3 vias</button></div></div>
+          <label class="cf-chk"><input type="checkbox" id="prAuto"><span><b>Imprimir sozinho ao finalizar a venda</b><small>Assim que a venda do caixa é concluída, o comprovante já vai para a impressora.</small></span></label>
+          <label class="cf-chk"><input type="checkbox" id="prLogo"><span><b>Logo no comprovante</b><small>Sai em preto e branco nas impressoras térmicas.</small></span></label>
+          <label class="cf-chk"><input type="checkbox" id="prCli"><span><b>Nome do cliente no comprovante</b><small>Quando o cliente for identificado na venda.</small></span></label>
+          <div class="cf-act"><button class="btn pri" type="button" id="prTeste"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M7 14h10v7H7z"></path></svg>Imprimir teste</button></div>
+        </div>
+        <div class="card cf-prev-card">
+          <h2>Prévia do comprovante</h2>
+          <div class="cf-prev"><iframe id="prPrev" title="Prévia do comprovante" tabindex="-1"></iframe></div>
+        </div>
+        <div class="card cf-loja">
+          <h2>Dados no comprovante</h2>
+          <p class="cf-note">Valem para todos os caixas e aparecem no topo e no fim do comprovante.</p>
+          <form id="ljForm" class="cf-form" autocomplete="off">
+            <div class="fld full"><label for="ljNome">Nome da loja</label><input id="ljNome" maxlength="60" required></div>
+            <div class="fld"><label for="ljDoc">CNPJ ou CPF</label><input id="ljDoc" maxlength="20" inputmode="numeric" placeholder="Opcional"></div>
+            <div class="fld"><label for="ljFone">Telefone / WhatsApp</label><input id="ljFone" maxlength="30" inputmode="tel"></div>
+            <div class="fld full"><label for="ljEnd">Endereço</label><input id="ljEnd" maxlength="100" placeholder="Rua, número e bairro"></div>
+            <div class="fld"><label for="ljCid">Cidade / UF</label><input id="ljCid" maxlength="50" placeholder="Ex.: Ourinhos/SP"></div>
+            <div class="fld"><label for="ljInsta">Instagram</label><input id="ljInsta" maxlength="40" placeholder="@sualoja"></div>
+            <div class="fld full"><label for="ljMsg">Mensagem no fim</label><input id="ljMsg" maxlength="80"></div>
+            <div class="fld full"><label for="ljTroca">Política de troca</label><textarea id="ljTroca" maxlength="240" rows="2" placeholder="Opcional. Ex.: Trocas em até 7 dias com este comprovante e a embalagem lacrada."></textarea></div>
+            <p class="err-msg full" id="ljErr" hidden></p>
+            <div class="cf-act full"><button class="btn pri needs-write" type="submit" id="ljSave">Salvar dados</button><span class="cf-saved" id="ljOk"></span></div>
+          </form>
+        </div>
+        <div class="card cf-help">
+          <h2>Como ligar a impressora</h2>
+          <ol>
+            <li><b>Instale a impressora no computador.</b> Use o driver do fabricante (Elgin, Epson, Bematech, Daruma, Knup, Tanca…), ligue pelo USB e faça a página de teste do Windows.</li>
+            <li><b>Deixe ela como impressora padrão</b> em Configurações do Windows › Bluetooth e dispositivos › Impressoras.</li>
+            <li><b>Toque em “Imprimir teste” aqui em cima.</b> Na janela que abrir, escolha a impressora térmica e, em <i>Mais definições</i>: Margens <b>Nenhuma</b>, desmarque <b>Cabeçalhos e rodapés</b> e escolha o papel de 80 mm ou 58 mm. O navegador guarda essas escolhas.</li>
+            <li><b>Para imprimir sem abrir a janela</b> (opcional): clique com o botão direito no atalho do Google Chrome › Propriedades e, no fim do campo Destino, acrescente <code>--kiosk-printing</code>. Abra o painel por esse atalho e ligue “Imprimir sozinho”.</li>
+            <li><b>No celular ou tablet:</b> use uma impressora térmica Bluetooth com um app de impressão (no Android, por exemplo, o RawBT) e escolha ela na tela de impressão.</li>
+          </ol>
+        </div>
       </div>
     </section>
 
@@ -666,8 +742,8 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
   function notice(html,err){$('notice').innerHTML=html?'<div class="notice'+(err?' err':'')+'">'+html+'</div>':''}
 
   /* ---------- rotas ---------- */
-  function route(){var h=(location.hash||'').replace('#','');view=['dashboard','caixa','pedidos','vendas','historico','estoque','produtos'].indexOf(h)>-1?h:'dashboard';
-    ['dashboard','caixa','pedidos','vendas','historico','estoque','produtos'].forEach(function(v){$('v-'+v).hidden=v!==view});
+  function route(){var h=(location.hash||'').replace('#','');view=['dashboard','caixa','pedidos','vendas','historico','estoque','produtos','config'].indexOf(h)>-1?h:'dashboard';
+    ['dashboard','caixa','pedidos','vendas','historico','estoque','produtos','config'].forEach(function(v){$('v-'+v).hidden=v!==view});
     document.querySelectorAll('.tab').forEach(function(t){if(t.getAttribute('data-view')===view)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current')});
     render()}
   window.addEventListener('hashchange',route);
@@ -690,7 +766,7 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
 
   /* ---------- render ---------- */
   function render(){
-    pdBadge();if(view==='dashboard')renderDash();else if(view==='pedidos')renderPedidos();else if(view==='caixa')renderCaixa();else if(view==='historico')renderHist();else if(view==='vendas')renderSales();else if(view==='estoque')renderStock();else renderProds();
+    pdBadge();if(db&&loaded.p)loadCfg();if(view==='dashboard')renderDash();else if(view==='pedidos')renderPedidos();else if(view==='caixa')renderCaixa();else if(view==='historico')renderHist();else if(view==='vendas')renderSales();else if(view==='config')renderCfg();else if(view==='estoque')renderStock();else renderProds();
   }
   function delta(cur,prev){if(prev==null)return '';if(!prev)return cur?'sem vendas no período anterior':'';var p=(cur-prev)/prev*100;return (p>=0?'▲ ':'▼ ')+Math.abs(p).toFixed(0)+'% vs. período anterior'}
   function renderDash(){
@@ -836,7 +912,7 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
     '<div class="fld"><label for="vFrete">Frete cobrado (R$)</label><input id="vFrete" type="number" min="0" step="0.01" inputmode="decimal" value="'+n(s.frete)+'"></div>'+
     '<div class="fld full"><label for="vObs">Observações</label><textarea id="vObs" maxlength="400" placeholder="Endereço, código de rastreio, pedido especial…">'+esc(s.obs||'')+'</textarea></div>'+
     '<div class="totals" id="vTot"></div><p class="err-msg" id="sErr" hidden></p>'+
-    '</div><div class="mf">'+(!isNew&&!ro?'<button class="btn danger" type="button" id="sDel">Excluir venda</button>':'')+'<div class="r"><button class="btn" type="button" data-close>Cancelar</button>'+(ro?'':'<button class="btn pri" type="submit">'+(isNew?'Registrar venda':'Salvar alterações')+'</button>')+'</div></div></form>');
+    '</div><div class="mf">'+(!isNew&&!ro?'<button class="btn danger" type="button" id="sDel">Excluir venda</button>':'')+'<div class="r">'+(!isNew?'<button class="btn" type="button" id="sPrint">Imprimir</button>':'')+'<button class="btn" type="button" data-close>Cancelar</button>'+(ro?'':'<button class="btn pri" type="submit">'+(isNew?'Registrar venda':'Salvar alterações')+'</button>')+'</div></div></form>');
     function rows(){var active=prods.filter(function(p){return p.ativo!==false}).sort(function(a,b){return (a.nome||'').localeCompare(b.nome||'')});
       $('itemRows').innerHTML=s.itens.map(function(it,i){var p=prodMap[it.produtoId],avail=p?availFor(p.id):null;
         var o='<option value="">Escolha o produto</option>'+active.map(function(pp){return '<option value="'+esc(pp.id)+'"'+(pp.id===it.produtoId?' selected':'')+'>'+esc(pp.nome)+' · '+n(pp.estoque)+' em estoque</option>'}).join('')+(it.produtoId&&!p?'<option value="'+esc(it.produtoId)+'" selected>'+esc(it.nome)+' (removido)</option>':'')+(p&&p.ativo===false?'<option value="'+esc(p.id)+'" selected>'+esc(p.nome)+' (inativo)</option>':'');
@@ -872,6 +948,7 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
       var ref=orig?db.collection('vendas').doc(orig.id):db.collection('vendas').doc();
       busy(e.submitter,true);
       ref.set(body).then(function(){return applyStock(orig,body,{id:ref.id,cliente:body.cliente})}).then(function(){closeModal();toast(orig?'Venda atualizada':'Venda registrada')},function(err){busy(e.submitter,false);showErr('sErr',errText(err))})});
+    if($('sPrint'))$('sPrint').addEventListener('click',function(){printSale(orig)});
     if($('sDel'))$('sDel').addEventListener('click',function(){confirmBox('Excluir esta venda?',(orig.status!=='Cancelado'?'Os itens voltam para o estoque. ':'')+'Isso não pode ser desfeito.','Excluir venda',function(){
       return db.collection('vendas').doc(orig.id).delete().then(function(){return applyStock(orig,null,{id:orig.id,cliente:orig.cliente})}).then(function(){toast('Venda excluída')})})});
   }
@@ -912,6 +989,72 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
     var csv='﻿'+rows.map(function(r){return r.map(q).join(';')}).join('\r\n');
     var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='vendas-quality3d-'+todayISO()+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500);toast('Arquivo baixado')});
 
+
+  /* ---------- configurações e impressão ---------- */
+  var PRT_DEF={papel:'80',fonte:'M',vias:1,auto:false,logo:true,cliente:true};
+  var LOJA_DEF={nome:'Quality 3D',doc:'',fone:'(18) 99648-8840',endereco:'',cidade:'',insta:'',msg:'Obrigado pela preferência!',troca:''};
+  var lojaCfg=null,cfgState=0,ljDirty=false;
+  try{lojaCfg=JSON.parse(localStorage.getItem('q3dLoja')||'null')}catch(x){}
+  function prtCfg(){try{return Object.assign({},PRT_DEF,JSON.parse(localStorage.getItem('q3dPrt')||'{}'))}catch(x){return Object.assign({},PRT_DEF)}}
+  function savePrt(o){try{localStorage.setItem('q3dPrt',JSON.stringify(o))}catch(x){}}
+  function loja(){return Object.assign({},LOJA_DEF,lojaCfg||{})}
+  function loadCfg(){if(cfgState)return;cfgState=1;
+    db.collection('config').onSnapshot(function(snap){snap.docs.forEach(function(d){if(d.id==='loja'){lojaCfg=d.data();try{localStorage.setItem('q3dLoja',JSON.stringify(lojaCfg))}catch(x){}}});if(view==='config'&&!ljDirty)renderCfg()},
+      function(){setTimeout(function(){cfgState=0},60000)})}
+  var LOGO=(document.querySelector('img[src^="data:image"]')||{}).src||'';
+  function cupomDoc(s,c,p){var m=function(v){return brl.format(n(v))};
+    var w=p.papel==='58'?'48mm':p.papel==='A4'?'120mm':'72mm',fs=({P:11,M:12.5,G:14.5})[p.fonte]||12.5;if(p.papel==='58')fs-=1.5;if(p.papel==='A4')fs+=1.5;
+    var css='@page{'+(p.papel==='A4'?'size:A4;margin:14mm':'margin:0')+'}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#000}'+
+      'body{font:'+fs+'px/1.35 "Courier New",ui-monospace,monospace;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+      '.c{width:'+w+';margin:0 auto;padding:'+(p.papel==='A4'?'0':'3mm 1.5mm 6mm')+'}.c+.c{break-before:page;page-break-before:always}'+
+      '.ce{text-align:center}.lg{display:block;max-width:62%;max-height:20mm;margin:0 auto 4px;filter:grayscale(1) contrast(1.5)}'+
+      'h1{font-size:1.3em;margin:0 0 2px;text-align:center;letter-spacing:.04em}p{margin:1px 0}hr{border:0;border-top:1px dashed #000;margin:6px 0}'+
+      '.l{display:flex;justify-content:space-between;gap:6px}.l span:last-child{white-space:nowrap}.it{margin:3px 0}.it .q{padding-left:10px}'+
+      '.t{font-weight:700;font-size:1.3em;margin:3px 0}.b{font-weight:700}.via{font-size:.85em;text-align:center;font-weight:700;margin-bottom:4px}.sm{font-size:.85em}';
+    var hora=s.hora||(s.criadoEm?new Date(s.criadoEm).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):''),dg=String(c.doc||'').replace(/\D/g,'');
+    var itens=s.itens||[],sub=n(s.subtotal)||itens.reduce(function(t,i){return t+n(i.qtd)*n(i.preco)},0),rec=n(s.recebido),troco=s.pagamento==='Dinheiro'&&rec>n(s.total)?rec-n(s.total):0;
+    var body=(p.logo&&LOGO?'<img class="lg" src="'+LOGO+'" alt="">':'')+'<h1>'+esc(String(c.nome||'').toUpperCase())+'</h1>'+
+      (c.doc?'<p class="ce">'+(dg.length===14?'CNPJ ':dg.length===11?'CPF ':'')+esc(c.doc)+'</p>':'')+(c.endereco?'<p class="ce">'+esc(c.endereco)+'</p>':'')+(c.cidade?'<p class="ce">'+esc(c.cidade)+'</p>':'')+
+      (c.fone?'<p class="ce">Tel./WhatsApp '+esc(c.fone)+'</p>':'')+(c.insta?'<p class="ce">Instagram '+esc(c.insta.charAt(0)==='@'?c.insta:'@'+c.insta)+'</p>':'')+
+      '<hr><p class="ce b">COMPROVANTE DE VENDA</p><p class="ce">'+fmtDate(s.data)+(hora?' às '+esc(hora):'')+'</p><p class="ce">Nº '+esc(s.codigo||('#'+String(s.id||'').slice(-6).toUpperCase()))+'</p><hr>'+
+      itens.map(function(i){return '<div class="it"><div>'+esc(i.nome)+'</div><div class="l q"><span>'+n(i.qtd)+' x '+m(i.preco)+'</span><span>'+m(n(i.qtd)*n(i.preco))+'</span></div></div>'}).join('')+'<hr>'+
+      '<div class="l"><span>Subtotal</span><span>'+m(sub)+'</span></div>'+(n(s.desconto)?'<div class="l"><span>Desconto</span><span>- '+m(s.desconto)+'</span></div>':'')+(n(s.frete)?'<div class="l"><span>Frete</span><span>'+m(s.frete)+'</span></div>':'')+
+      '<div class="l t"><span>TOTAL</span><span>'+m(s.total)+'</span></div><div class="l"><span>Pagamento</span><span>'+esc(s.pagamento||'')+'</span></div>'+
+      (troco?'<div class="l"><span>Recebido</span><span>'+m(rec)+'</span></div><div class="l b"><span>Troco</span><span>'+m(troco)+'</span></div>':'')+
+      (p.cliente&&s.cliente&&s.cliente!=='Cliente balcão'?'<hr><p>Cliente: '+esc(s.cliente)+'</p>'+(s.contato?'<p>'+esc(s.contato)+'</p>':''):'')+
+      '<hr>'+(c.msg?'<p class="ce b">'+esc(c.msg)+'</p>':'')+(c.troca?'<p class="ce sm">'+esc(c.troca)+'</p>':'')+'<p class="ce sm">Comprovante sem valor fiscal</p>';
+    var vias=Math.max(1,Math.min(3,parseInt(p.vias,10)||1)),lbl=['1ª via · loja','2ª via · cliente','3ª via'],out='';
+    for(var v=0;v<vias;v++)out+='<div class="c">'+(vias>1?'<p class="via">'+lbl[v]+'</p>':'')+body+'</div>';
+    return '<!doctype html><html><head><meta charset="utf-8"><title>Comprovante '+esc(s.codigo||'')+'</title><style>'+css+'</style></head><body>'+out+'</body></html>'}
+  function printHTML(html,fallbackBody){var f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.tabIndex=-1;
+    f.style.cssText='position:fixed;left:-10000px;top:0;width:400px;height:600px;border:0;opacity:0;pointer-events:none';document.body.appendChild(f);
+    var go=function(){try{f.contentWindow.focus();f.contentWindow.print()}catch(x){f.remove();try{$('cupom').innerHTML=fallbackBody||'';window.print()}catch(y){toast('Não foi possível abrir a impressão aqui')}return}setTimeout(function(){f.remove()},60000)};
+    try{var d=f.contentWindow.document;d.open();d.write(html);d.close();var imgs=[].slice.call(d.images),left=imgs.length;
+      if(!left)setTimeout(go,150);else{var done=function(){if(--left<=0)setTimeout(go,100)};imgs.forEach(function(im){if(im.complete)done();else{im.onload=done;im.onerror=done}})}}
+    catch(x){f.remove();toast('Não foi possível abrir a impressão aqui')}}
+  function printSale(s){if(!s)return;printHTML(cupomDoc(s,loja(),prtCfg()))}
+  function sampleSale(){var ps=prods.filter(function(p){return p.ativo!==false}).slice(0,2),it=ps.length?ps.map(function(p,k){return {nome:p.nome,qtd:k?1:2,preco:n(p.preco)||79.9}}):[{nome:'PLA Dourado',qtd:2,preco:89.9},{nome:'PLA Preto',qtd:1,preco:79.9}];
+    var sub=it.reduce(function(t,i){return t+i.qtd*i.preco},0),tot=Math.round((sub-10)*100)/100;
+    return {codigo:'TESTE',data:todayISO(),hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),itens:it,subtotal:sub,desconto:10,frete:0,total:tot,pagamento:'Dinheiro',recebido:Math.ceil(tot/50)*50,cliente:'Maria Silva',contato:'(18) 99999-0000'}}
+  function formLoja(){return {nome:$('ljNome').value.trim(),doc:$('ljDoc').value.trim(),fone:$('ljFone').value.trim(),endereco:$('ljEnd').value.trim(),cidade:$('ljCid').value.trim(),insta:$('ljInsta').value.trim(),msg:$('ljMsg').value.trim(),troca:$('ljTroca').value.trim()}}
+  function cfgPreview(){var p=prtCfg(),f=$('prPrev'),c=ljDirty?Object.assign({},LOJA_DEF,formLoja()):loja();
+    f.style.width=p.papel==='A4'?'100%':(p.papel==='58'?'58mm':'80mm');
+    try{var d=f.contentWindow.document;d.open();d.write(cupomDoc(sampleSale(),c,p));d.close();
+      var fit=function(){try{f.style.height=(d.documentElement.scrollHeight+4)+'px'}catch(x){}};fit();[].slice.call(d.images).forEach(function(im){im.onload=fit});setTimeout(fit,120)}catch(x){}}
+  function renderCfg(){var p=prtCfg();
+    [['prPapel','papel'],['prFonte','fonte'],['prVias','vias']].forEach(function(a){$(a[0]).querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(p[a[1]])===b.getAttribute('data-v')?'true':'false')})});
+    $('prAuto').checked=!!p.auto;$('prLogo').checked=!!p.logo;$('prCli').checked=!!p.cliente;
+    if(!ljDirty){var c=loja();$('ljNome').value=c.nome;$('ljDoc').value=c.doc;$('ljFone').value=c.fone;$('ljEnd').value=c.endereco;$('ljCid').value=c.cidade;$('ljInsta').value=c.insta;$('ljMsg').value=c.msg;$('ljTroca').value=c.troca}
+    $('ljForm').querySelectorAll('input,textarea,button').forEach(function(x){x.disabled=!canWrite});
+    cfgPreview()}
+  [['prPapel','papel'],['prFonte','fonte'],['prVias','vias']].forEach(function(a){$(a[0]).addEventListener('click',function(e){var b=e.target.closest('[data-v]');if(!b)return;var p=prtCfg(),v=b.getAttribute('data-v');p[a[1]]=a[1]==='vias'?+v:v;savePrt(p);renderCfg()})});
+  [['prAuto','auto'],['prLogo','logo'],['prCli','cliente']].forEach(function(a){$(a[0]).addEventListener('change',function(){var p=prtCfg();p[a[1]]=this.checked;savePrt(p);cfgPreview();toast('Configuração salva neste aparelho')})});
+  $('prTeste').addEventListener('click',function(){printSale(sampleSale())});
+  $('ljForm').addEventListener('input',function(){ljDirty=true;$('ljOk').textContent='';clearTimeout(this._t);this._t=setTimeout(cfgPreview,250)});
+  $('ljForm').addEventListener('submit',function(e){e.preventDefault();if(!canWrite)return;var body=formLoja();$('ljErr').hidden=true;
+    if(body.nome.length<2)return showErr('ljErr','Informe o nome da loja.');body.atualizadoEm=Date.now();var b=$('ljSave');busy(b,true);
+    db.collection('config').doc('loja').set(body).then(function(){busy(b,false);lojaCfg=body;ljDirty=false;try{localStorage.setItem('q3dLoja',JSON.stringify(body))}catch(x){}$('ljOk').textContent='Salvo';toast('Dados do comprovante salvos');renderCfg()},
+      function(err){busy(b,false);showErr('ljErr',errText(err))})});
 
   /* ---------- caixa (PDV) ---------- */
   var cx={itens:[],pag:'Dinheiro'},CXPAGS=['Dinheiro','Pix','Cartão de débito','Cartão de crédito'];
@@ -961,7 +1104,7 @@ window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
       '<div class="l t"><span>TOTAL</span><span>'+brl.format(s.total)+'</span></div><div class="l"><span>'+esc(s.pagamento)+'</span><span>'+brl.format(s.recebido)+'</span></div>'+
       (troco?'<div class="l"><span>Troco</span><span>'+brl.format(troco)+'</span></div>':'')+'<hr><p>'+esc(s.cliente)+'</p><p>Obrigado pela preferência!</p><p class="nf">Comprovante sem valor fiscal</p>';
     openModal('<div class="mh"><h2 id="mTitle">Venda concluída</h2><button class="x" type="button" data-close aria-label="Fechar">×</button></div><div class="mb cx-done"><div class="big">'+brl.format(s.total)+'</div><p>'+esc(s.pagamento)+(troco?' · <b>troco de '+brl.format(troco)+'</b>':'')+'</p><p class="sub">'+esc(s.codigo)+' registrada e estoque atualizado.</p></div><div class="mf"><div class="r"><button class="btn" type="button" id="cxPrint">Imprimir comprovante</button><button class="btn pri" type="button" data-close>Nova venda</button></div></div>');
-    $('cxPrint').addEventListener('click',function(){try{window.print()}catch(x){toast('Não foi possível imprimir aqui')}})}
+    $('cxPrint').addEventListener('click',function(){printSale(s)});if(prtCfg().auto)printSale(s)}
   $('cxProds').addEventListener('click',function(e){var b=e.target.closest('[data-cxadd]');if(b)cxAdd(b.getAttribute('data-cxadd'))});
   $('cxItens').addEventListener('click',function(e){var b=e.target.closest('[data-cxq]');if(!b)return;var k=+b.getAttribute('data-cxq'),it=cx.itens[k];if(!it)return;
     it.qtd+=+b.getAttribute('data-d');if(it.qtd<=0)cx.itens.splice(k,1);renderCaixa()});
