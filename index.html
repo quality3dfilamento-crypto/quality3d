@@ -131,6 +131,8 @@ section{padding-block:84px}
 .prod:hover{transform:translateY(-4px);box-shadow:0 26px 50px rgba(59,10,14,.12);border-color:var(--orange)}
 .ph{aspect-ratio:1 / 1;padding:12px;background:#fff;position:relative}
 .ph img{width:100%;height:100%;object-fit:contain;transition:transform .6s}
+.ph .noph{display:block;width:72%;height:72%;margin:14% auto;border-radius:50%;box-shadow:inset 0 0 0 14px rgba(255,255,255,.35),0 12px 30px rgba(0,0,0,.12)}
+.prod.off{display:none!important}
 .prod:hover .ph img{transform:scale(1.05)}
 .badge{position:absolute;left:14px;top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:6px;background:var(--night);color:var(--ink);z-index:1}
 .badge.hot{background:var(--orange);color:var(--ink)}
@@ -554,7 +556,7 @@ footer a:hover{color:#fff!important}
 <section class="plate" id="filamentos">
   <div class="wrap">
     <div class="head">
-      <div><span class="eyebrow">Filamentos</span><h2>Escolha sua cor</h2><p>Rolos de 1 kg com 1,75 mm de diâmetro. Preços ilustrativos para apresentação.</p></div>
+      <div><span class="eyebrow">Filamentos</span><h2>Escolha sua cor</h2><p>Rolos de 1 kg com 1,75 mm de diâmetro. Preços e produtos atualizados direto do nosso estoque.</p></div>
     </div>
     <div class="filters" id="filters">
       <button class="filter" type="button" aria-pressed="true" data-f="all">Todos</button>
@@ -771,7 +773,7 @@ footer a:hover{color:#fff!important}
     var c=$('cartCount'); c.textContent=count(); c.classList.add('bump'); setTimeout(function(){c.classList.remove('bump')},250);
     var keys=Object.keys(cart), tot=0;
     $('items').innerHTML=keys.length?keys.map(function(k){var p=P[k];tot+=p[1]*cart[k];
-      return '<div class="item"><img src="'+IMG[p[2]]+'" alt=""><div><b>'+p[0]+'</b><small>'+brl.format(p[1])+'</small></div><div class="qty"><button type="button" data-k="'+k+'" data-d="-1" aria-label="Diminuir">−</button><span>'+cart[k]+'</span><button type="button" data-k="'+k+'" data-d="1" aria-label="Aumentar">+</button></div></div>';}).join(''):'<p class="empty">Seu carrinho está vazio.<br>Escolha um filamento para começar.</p>';
+      return '<div class="item"><img src="'+escH(IMG[p[2]])+'" alt=""><div><b>'+escH(p[0])+'</b><small>'+brl.format(p[1])+'</small></div><div class="qty"><button type="button" data-k="'+k+'" data-d="-1" aria-label="Diminuir">−</button><span>'+cart[k]+'</span><button type="button" data-k="'+k+'" data-d="1" aria-label="Aumentar">+</button></div></div>';}).join(''):'<p class="empty">Seu carrinho está vazio.<br>Escolha um filamento para começar.</p>';
     $('total').textContent=brl.format(tot);
   }
   function open(){$('drawer').hidden=false;$('scrim').hidden=false;$('toast').hidden=true}
@@ -793,14 +795,43 @@ footer a:hover{color:#fff!important}
     return order.map(function(id){var a=acc[id];return {produtoId:id,qtd:a.qtd,preco:Math.round(a.total/a.qtd*100)/100}})}
   function registrar(dados){if(!sbc){$('ckWarn').hidden=false;return}
     sbc.rpc('criar_pedido',{p:Object.assign({itens:itensPedido()},dados)}).then(function(r){if(r.error){$('ckWarn').hidden=false}},function(){$('ckWarn').hidden=false})}
-  if(sbc)sbc.rpc('catalogo').then(function(r){if(r.error||!r.data)return;var inv={};Object.keys(MAP).forEach(function(k){if(MAP[k].length===1)inv[MAP[k][0]]=k});
-    r.data.forEach(function(row){var k=inv[row.id];if(!k||row.preco==null||!(+row.preco>0))return;var pr=+row.preco;BASE[row.id]=pr;P[k][1]=pr;
-      document.querySelectorAll('.add[data-id="'+k+'"]').forEach(function(b){var el=b.closest('.prod')&&b.closest('.prod').querySelector('.price');if(el&&el.firstChild)el.firstChild.nodeValue=brl.format(pr)})});render()},function(){});
+  /* catálogo: todo produto ativo do painel aparece na loja */
+  function escH(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function hexOk(h){return /^#[0-9a-f]{3,8}$/i.test(h||'')?h:'#cccccc'}
+  function tagOf(t){t=String(t||'').toLowerCase();return t.indexOf('silk')>-1||t==='kit'?'silk':t.replace(/[^a-z0-9]/g,'')||'outros'}
+  function swatch(h){return 'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="'+hexOk(h)+'"/></svg>')}
+  function syncCat(rows){var inv={};Object.keys(MAP).forEach(function(k){if(MAP[k].length===1)inv[MAP[k][0]]=k});
+    var grid=$('prods'),fb=$('filters'),novos={};
+    rows.forEach(function(row){var pr=+row.preco,ok=row.ativo!==false&&pr>0,k=inv[row.id];
+      if(k){var b0=document.querySelector('#prods .add[data-id="'+k+'"]'),card=b0&&b0.closest('.prod');
+        if(card)card.classList.toggle('off',!ok);
+        if(!ok)return;
+        if(row.nome){P[k][0]=row.nome;var h=card&&card.querySelector('h3');if(h)h.textContent=row.nome}
+        if(row.foto&&/^data:image\//.test(row.foto)&&card){var im=card.querySelector('.ph img');if(im)im.src=row.foto}
+        BASE[row.id]=pr;P[k][1]=pr;
+        document.querySelectorAll('.add[data-id="'+k+'"]').forEach(function(b){var el=b.closest('.prod')&&b.closest('.prod').querySelector('.price');if(el&&el.firstChild)el.firstChild.nodeValue=brl.format(pr)});
+        return}
+      if(!ok||document.querySelector('#prods [data-pid="'+CSS.escape(row.id)+'"]'))return;
+      var key='p_'+row.id,tg=tagOf(row.tipo),cor=row.cor||'',hex=hexOk(row.cor_hex);
+      P[key]=[row.nome,pr,key];MAP[key]=[row.id];BASE[row.id]=pr;IMG[key]=row.foto||swatch(hex);
+      if(!fb.querySelector('[data-f="'+tg+'"]'))novos[tg]=row.tipo||'Outros';
+      var tags=tg+(/dourad|prata|cobre|bronze|metal/i.test(cor+' '+row.nome)?' metal':'')+(/transl/i.test(cor+' '+row.nome)?' trans':'');
+      var chips=[row.tipo].concat(String(row.peso||'').split(/[·|]/)).map(function(s){return String(s||'').trim()}).filter(Boolean).slice(0,3);
+      var el=document.createElement('article');el.className='prod';el.setAttribute('data-tags',tags);el.setAttribute('data-pid',row.id);
+      el.innerHTML='<div class="ph">'+(row.foto?'<img src="'+escH(row.foto)+'" alt="'+escH(row.nome)+'" loading="lazy">':'<span class="noph" style="background:'+hex+'"></span>')+'</div>'+
+        '<div class="pb">'+(cor?'<span class="sw"><i style="background:'+hex+'"></i>'+escH(cor)+'</span>':'')+'<h3>'+escH(row.nome)+'</h3><div class="chips">'+chips.map(function(c){return '<span>'+escH(c)+'</span>'}).join('')+'</div>'+
+        '<div class="buyrow"><span class="price">'+brl.format(pr)+'<small>'+(row.tipo==='Kit'?'kit':'por rolo')+'</small></span><button class="btn btn-ink add" type="button" data-id="'+escH(key)+'">Adicionar</button></div></div>';
+      el.querySelector('.add').addEventListener('click',function(){add(key,this)});grid.appendChild(el);
+      if(row.tipo!=='Kit'&&$('fil')){var o=document.createElement('option');o.value='x-'+row.id;o.setAttribute('data-k',key);o.setAttribute('data-kg',pr);o.textContent=row.nome+' · '+brl.format(pr)+' / kg';$('fil').appendChild(o)}
+    });
+    Object.keys(novos).forEach(function(tg){var b=document.createElement('button');b.className='filter';b.type='button';b.setAttribute('aria-pressed','false');b.setAttribute('data-f',tg);b.textContent=novos[tg];b.addEventListener('click',function(){filt(tg)});fb.appendChild(b)});
+    render()}
+  if(sbc)sbc.rpc('catalogo').then(function(r){if(r.error||!r.data)return;syncCat(r.data)},function(){});
   /* checkout */
   var WA='5518996488840';
   function openCk(){if(!count()){$('note').textContent='Adicione um filamento antes de finalizar.';return}close();
     try{var sv=JSON.parse(localStorage.getItem('q3dCliente')||'{}');if(sv.cNome)$('cLembrar').checked=true;['cNome','cCpf','cEmail','cZap','cTel','cCep','cRua','cNum','cComp','cBairro','cCid','cUf','cRef'].forEach(function(id){if(sv[id]&&!$(id).value)$(id).value=sv[id]})}catch(e){}
-    var tot=0,h='';Object.keys(cart).forEach(function(k){var p=P[k];tot+=p[1]*cart[k];h+='<div><span>'+cart[k]+'x '+p[0]+'</span><span>'+brl.format(p[1]*cart[k])+'</span></div>'});
+    var tot=0,h='';Object.keys(cart).forEach(function(k){var p=P[k];tot+=p[1]*cart[k];h+='<div><span>'+cart[k]+'x '+escH(p[0])+'</span><span>'+brl.format(p[1]*cart[k])+'</span></div>'});
     $('ckSum').innerHTML=h+'<div class="t"><span>Total dos produtos</span><span>'+brl.format(tot)+'</span></div><small>Frete calculado e confirmado no WhatsApp.</small>';
     $('ckForm').hidden=false;$('ckOk').hidden=true;$('ckStep3').classList.remove('on');$('ck').hidden=false;$('ckBody').scrollTop=0;setTimeout(function(){$('cNome').focus()},50)}
   function closeCk(){$('ck').hidden=true}
@@ -845,26 +876,25 @@ footer a:hover{color:#fff!important}
 
   // filtros
   var fs=document.querySelectorAll('.filter'), ps=document.querySelectorAll('#prods .prod');
-  function filt(f){fs.forEach(function(x){x.setAttribute('aria-pressed',x.getAttribute('data-f')===f?'true':'false')});
-    ps.forEach(function(p){p.hidden=!(f==='all'||p.getAttribute('data-tags').split(' ').indexOf(f)>-1)})}
+  function filt(f){document.querySelectorAll('#filters .filter').forEach(function(x){x.setAttribute('aria-pressed',x.getAttribute('data-f')===f?'true':'false')});
+    document.querySelectorAll('#prods .prod').forEach(function(p){p.hidden=!(f==='all'||p.getAttribute('data-tags').split(' ').indexOf(f)>-1)})}
   fs.forEach(function(b){b.addEventListener('click',function(){filt(b.getAttribute('data-f'))})});
 
   // busca
-  $('busca').addEventListener('submit',function(e){e.preventDefault();var q=$('q').value.toLowerCase();
-    var f=/silk|furta|multi/.test(q)?'silk':/dourad|metal|ouro/.test(q)?'metal':/azul|transl/.test(q)?'trans':/pla|preto/.test(q)?'pla':'all';
-    filt(f);if(/preto/.test(q)){ps.forEach(function(p){p.hidden=p.querySelector('h3').textContent.indexOf('Preto')<0})}
+  $('busca').addEventListener('submit',function(e){e.preventDefault();var nm=function(s){return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()},q=nm($('q').value.trim());filt('all');
+    if(q){var any=false,ws=q.split(/\s+/);document.querySelectorAll('#prods .prod').forEach(function(p){var hay=nm(p.textContent+' '+p.getAttribute('data-tags')+(/silk/.test(p.getAttribute('data-tags'))?' multicolor furta':'')+(/metal/.test(p.getAttribute('data-tags'))?' ouro metalico':''));var hit=ws.every(function(w){return hay.indexOf(w)>-1});p.hidden=!hit;if(hit)any=true});if(!any)filt('all')}
     $('filamentos').scrollIntoView({behavior:'smooth'})});
 
   // calculadora
   var map={'89.90':'dourado','84.90':'azul','79.90':'preto','149.90':'silk'};
   function v(id){var n=parseFloat($(id).value);return isFinite(n)&&n>0?n:0}
-  function calc(){var sel=$('fil').value, perKg=sel==='149.90'?149.90/4:parseFloat(sel), g=v('g'), n=Math.max(1,Math.round(v('n'))||1);
+  function calc(){var sel=$('fil').value, perKg=(function(){var o=$('fil').options[$('fil').selectedIndex];return o&&o.getAttribute('data-kg')?+o.getAttribute('data-kg'):sel==='149.90'?149.90/4:parseFloat(sel)})(), g=v('g'), n=Math.max(1,Math.round(v('n'))||1);
     var mat=g/1000*perKg, en=0.2*v('h')*v('kwh'), unit=mat+en;
     $('oUnit').textContent=brl.format(unit);$('oMat').textContent=brl.format(mat*n);$('oEn').textContent=brl.format(en*n);$('oTot').textContent=brl.format(unit*n);
     $('oYield').textContent=g?Math.floor(1000/g)+' peças':'—';
     $('bMat').style.width=(unit?mat/unit*100:0)+'%';$('bEn').style.width=(unit?en/unit*100:0)+'%';}
   $('calcForm').addEventListener('input',calc);$('calcForm').addEventListener('submit',function(e){e.preventDefault()});
-  $('calcAdd').addEventListener('click',function(){add(map[$('fil').value],$('calcAdd'))});
+  $('calcAdd').addEventListener('click',function(){var o=$('fil').options[$('fil').selectedIndex];add((o&&o.getAttribute('data-k'))||map[$('fil').value],$('calcAdd'))});
   calc();
 
   // capas
